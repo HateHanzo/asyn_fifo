@@ -115,7 +115,7 @@ end
 //read data
 always@(posedge clk_r)
   if(ren && (!empty))
-    rdata <= #DLY mem[wbin[ADDR_FIFO-1:0]] ;
+    rdata <= #DLY mem[rbin[ADDR_FIFO-1:0]] ;
   else ;
 
 //use 2 dff sync wgray from clk_w
