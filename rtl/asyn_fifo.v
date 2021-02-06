@@ -132,7 +132,7 @@ begin
 end
 
 //gen empty,the wgray and rgray_d2 the same
-wire full = (rgray == wgray_d2);
+wire empty = (rgray == wgray_d2);
 
 
 endmodule
