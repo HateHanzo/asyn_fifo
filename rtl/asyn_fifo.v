@@ -96,7 +96,7 @@ wire full = (wgray == {~rgray_d2[ADDR_FIFO:ADDR_FIFO-1],rgray_d2[ADDR_FIFO-2:0})
 //read clock domain
 //-----------------
 
-wire rbin_next = ( ren && (!full) ) ? (rbin + {{{ADDR_FIFO}{1'b0}},1'b1}) ;
+wire rbin_next = ( ren && (!empty) ) ? (rbin + {{{ADDR_FIFO}{1'b0}},1'b1}) ;
 wire rgray_next = ( rbin_next >> 1 ) ^ rbin_next ;
 
 always@(posedge clk_r or negedge rst_n)
