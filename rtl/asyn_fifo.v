@@ -1,6 +1,8 @@
 //file name: asyn_fifo.v
 //function : asyn fifo for CDC
 //author   : HateHanzo
+
+`timescale 1ns/10ps
 module asyn_fifo(
         clk_w , 
         clk_r , 
@@ -43,8 +45,13 @@ reg    [ADDR_FIFO:0]    rbin                ;
 reg    [ADDR_FIFO:0]    rgray               ;
 reg    [ADDR_FIFO:0]    rgray_d1            ;
 reg    [ADDR_FIFO:0]    rgray_d2            ;
+reg    [WIDTH_FIFO-1:0] rdata               ;
 reg    [WIDTH_FIFO-1:0] mem[DEPTH_FIFO-1:0] ;
 
+wire    [ADDR_FIFO:0]    wbin_next          ;
+wire    [ADDR_FIFO:0]    wgray_next          ;
+wire    [ADDR_FIFO:0]    rbin_next          ;
+wire    [ADDR_FIFO:0]    rgray_next          ;
 
 //-----------------------------
 //--main circuit
@@ -54,8 +61,8 @@ reg    [WIDTH_FIFO-1:0] mem[DEPTH_FIFO-1:0] ;
 //write clock domain
 //------------------
 
-wire wbin_next = ( wen && (!full) ) ? (wbin + {{{ADDR_FIFO}{1'b0}},1'b1}) ;
-wire wgray_next = ( wbin_next >> 1 ) ^ wbin_next ;
+assign wbin_next = ( wen && (!full) ) ? (wbin + {{{ADDR_FIFO}{1'b0}},1'b1}) : wbin;
+assign wgray_next = ( wbin_next >> 1 ) ^ wbin_next ;
 
 always@(posedge clk_w or negedge rst_n)
 begin
@@ -90,14 +97,14 @@ end
 
 //gen full,the MSB and second MSB both different between wgray and
 //rgray_d2,the rest same
-wire full = (wgray == {~rgray_d2[ADDR_FIFO:ADDR_FIFO-1],rgray_d2[ADDR_FIFO-2:0});
+wire full = (wgray == {~rgray_d2[ADDR_FIFO:ADDR_FIFO-1],rgray_d2[ADDR_FIFO-2:0]});
 
 //-----------------
 //read clock domain
 //-----------------
 
-wire rbin_next = ( ren && (!empty) ) ? (rbin + {{{ADDR_FIFO}{1'b0}},1'b1}) ;
-wire rgray_next = ( rbin_next >> 1 ) ^ rbin_next ;
+assign rbin_next = ( ren && (!empty) ) ? (rbin + {{{ADDR_FIFO}{1'b0}},1'b1}) : rbin ;
+assign rgray_next = ( rbin_next >> 1 ) ^ rbin_next ;
 
 always@(posedge clk_r or negedge rst_n)
 begin
